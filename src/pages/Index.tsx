@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
+import BlockchainVisual from '../components/BlockchainVisual';
 import ContractAnalyzer from '../components/ContractAnalyzer';
 import DashboardPreview from '../components/DashboardPreview';
 import Footer from '../components/Footer';
@@ -16,6 +17,7 @@ const Index = () => {
       <Navbar />
       <main className="flex-grow">
         <Hero />
+        <BlockchainVisual />
         <ContractAnalyzer />
         <DashboardPreview />
       </main>
