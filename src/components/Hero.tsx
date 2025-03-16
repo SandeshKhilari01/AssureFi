@@ -46,45 +46,53 @@ const Hero: React.FC = () => {
               <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-defi-purple/10 rounded-full backdrop-blur-3xl animate-pulse-soft"></div>
               
               <div className="glass-panel p-6 relative animate-float">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-risk-low"></div>
-                    <div className="text-sm font-medium">AssureFi Status</div>
+                <div className="mb-4 flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center mr-3">
+                    <Shield className="h-5 w-5 text-brand" />
                   </div>
-                  <div className="text-xs text-white/70">Live Network</div>
+                  <h3 className="font-semibold text-lg">AssureFi Protection</h3>
                 </div>
                 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-white/70">Risk Score</div>
-                    <div className="text-sm font-medium">12 <span className="text-risk-low">(Low)</span></div>
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-defi-blue/10 flex items-center justify-center mr-3">
+                        <Shield className="h-4 w-4 text-defi-blue" />
+                      </div>
+                      <span>Contract Safety</span>
+                    </div>
+                    <div className="h-2 w-24 bg-risk-low/30 rounded-full relative overflow-hidden">
+                      <div className="absolute top-0 left-0 h-full w-5/6 bg-risk-low rounded-full"></div>
+                    </div>
                   </div>
                   
-                  <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-risk-low h-full rounded-full" style={{ width: '12%' }}></div>
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-defi-teal/10 flex items-center justify-center mr-3">
+                        <BarChart2 className="h-4 w-4 text-defi-teal" />
+                      </div>
+                      <span>Liquidity Score</span>
+                    </div>
+                    <div className="h-2 w-24 bg-risk-medium/30 rounded-full relative overflow-hidden">
+                      <div className="absolute top-0 left-0 h-full w-2/3 bg-risk-medium rounded-full"></div>
+                    </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2 pt-2">
-                    <div className="p-2 rounded-lg bg-white/5">
-                      <div className="text-xs text-white/70">Contract Audit</div>
-                      <div className="text-sm font-medium text-risk-low">Verified</div>
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-defi-purple/10 flex items-center justify-center mr-3">
+                        <MessageSquare className="h-4 w-4 text-defi-purple" />
+                      </div>
+                      <span>Social Sentiment</span>
                     </div>
-                    
-                    <div className="p-2 rounded-lg bg-white/5">
-                      <div className="text-xs text-white/70">Liquidity</div>
-                      <div className="text-sm font-medium">$12.5M</div>
-                    </div>
-                    
-                    <div className="p-2 rounded-lg bg-white/5">
-                      <div className="text-xs text-white/70">24h Volume</div>
-                      <div className="text-sm font-medium">$4.2M</div>
-                    </div>
-                    
-                    <div className="p-2 rounded-lg bg-white/5">
-                      <div className="text-xs text-white/70">Sentiment</div>
-                      <div className="text-sm font-medium text-risk-low">Positive</div>
+                    <div className="h-2 w-24 bg-risk-high/30 rounded-full relative overflow-hidden">
+                      <div className="absolute top-0 left-0 h-full w-1/3 bg-risk-high rounded-full"></div>
                     </div>
                   </div>
+                </div>
+                
+                <div className="w-full h-12 bg-white/5 rounded-lg flex items-center justify-center text-sm font-medium">
+                  Overall Risk Score: <span className="ml-2 text-risk-medium">Moderate (67/100)</span>
                 </div>
               </div>
             </div>
