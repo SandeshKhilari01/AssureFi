@@ -1,9 +1,140 @@
-
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, BarChart2, MessageSquare, ChevronRight } from 'lucide-react';
 
 const Hero: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    // Set canvas dimensions
+    const setDimensions = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    
+    setDimensions();
+    window.addEventListener('resize', setDimensions);
+    
+    // Create nodes for our network
+    const nodes: { x: number; y: number; vx: number; vy: number; radius: number; color: string }[] = [];
+    const connections: { from: number; to: number }[] = [];
+    
+    // Initialize nodes
+    for (let i = 0; i < 12; i++) {
+      nodes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        radius: Math.random() * 4 + 2,
+        color: ['#0496FF', '#8B5CF6', '#14B8A6'][Math.floor(Math.random() * 3)]
+      });
+    }
+    
+    // Create connections between nodes
+    for (let i = 0; i < nodes.length; i++) {
+      const connectionsCount = Math.floor(Math.random() * 2) + 1;
+      for (let j = 0; j < connectionsCount; j++) {
+        const targetIndex = Math.floor(Math.random() * nodes.length);
+        if (targetIndex !== i) {
+          connections.push({ from: i, to: targetIndex });
+        }
+      }
+    }
+    
+    // Animation variables
+    let animationFrame: number;
+    let time = 0;
+    
+    const animate = () => {
+      time += 0.01;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Update node positions
+      nodes.forEach((node, index) => {
+        // Add some oscillation
+        node.x += node.vx + Math.sin(time + index) * 0.2;
+        node.y += node.vy + Math.cos(time + index) * 0.2;
+        
+        // Boundary check
+        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+        
+        // Keep nodes within canvas
+        node.x = Math.max(node.radius, Math.min(canvas.width - node.radius, node.x));
+        node.y = Math.max(node.radius, Math.min(canvas.height - node.radius, node.y));
+      });
+      
+      // Draw connections
+      connections.forEach(connection => {
+        const fromNode = nodes[connection.from];
+        const toNode = nodes[connection.to];
+        
+        const distance = Math.sqrt(
+          Math.pow(toNode.x - fromNode.x, 2) + 
+          Math.pow(toNode.y - fromNode.y, 2)
+        );
+        
+        // Only draw if nodes are within a certain distance
+        if (distance < 150) {
+          const opacity = 1 - (distance / 150);
+          
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.5})`;
+          ctx.lineWidth = 1;
+          ctx.moveTo(fromNode.x, fromNode.y);
+          ctx.lineTo(toNode.x, toNode.y);
+          ctx.stroke();
+          
+          // Draw data pulse along the line
+          const pulse = (time * 2) % 1;
+          const pulseX = fromNode.x + (toNode.x - fromNode.x) * pulse;
+          const pulseY = fromNode.y + (toNode.y - fromNode.y) * pulse;
+          
+          ctx.beginPath();
+          ctx.fillStyle = fromNode.color;
+          ctx.arc(pulseX, pulseY, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      
+      // Draw nodes
+      nodes.forEach(node => {
+        ctx.beginPath();
+        ctx.fillStyle = node.color;
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw glow
+        ctx.beginPath();
+        const gradient = ctx.createRadialGradient(
+          node.x, node.y, node.radius,
+          node.x, node.y, node.radius * 3
+        );
+        gradient.addColorStop(0, `${node.color}80`);
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.arc(node.x, node.y, node.radius * 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      animationFrame = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => {
+      window.removeEventListener('resize', setDimensions);
+      cancelAnimationFrame(animationFrame);
+    };
+  }, []);
+  
   return (
     <div className="relative pb-16 pt-32 md:pt-40 overflow-hidden">
       {/* Background gradient */}
@@ -42,57 +173,23 @@ const Hero: React.FC = () => {
           
           <div className="w-full md:w-auto scale-in">
             <div className="relative w-full max-w-sm mx-auto">
+              {/* Animated blockchain network visualization */}
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand/10 rounded-full backdrop-blur-3xl animate-pulse-soft"></div>
               <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-defi-purple/10 rounded-full backdrop-blur-3xl animate-pulse-soft"></div>
               
-              <div className="glass-panel p-6 relative animate-float">
-                <div className="mb-4 flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center mr-3">
-                    <Shield className="h-5 w-5 text-brand" />
-                  </div>
-                  <h3 className="font-semibold text-lg">AssureFi Protection</h3>
-                </div>
+              <div className="glass-panel p-2 relative animate-float">
+                <canvas 
+                  ref={canvasRef} 
+                  className="w-full h-[280px] rounded-lg"
+                  style={{ background: 'transparent' }}
+                />
                 
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-defi-blue/10 flex items-center justify-center mr-3">
-                        <Shield className="h-4 w-4 text-defi-blue" />
-                      </div>
-                      <span>Contract Safety</span>
-                    </div>
-                    <div className="h-2 w-24 bg-risk-low/30 rounded-full relative overflow-hidden">
-                      <div className="absolute top-0 left-0 h-full w-5/6 bg-risk-low rounded-full"></div>
-                    </div>
+                <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center p-2 bg-white/10 backdrop-blur-md rounded-lg">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-risk-low animate-pulse mr-2"></div>
+                    <span className="text-xs">Network Active</span>
                   </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-defi-teal/10 flex items-center justify-center mr-3">
-                        <BarChart2 className="h-4 w-4 text-defi-teal" />
-                      </div>
-                      <span>Liquidity Score</span>
-                    </div>
-                    <div className="h-2 w-24 bg-risk-medium/30 rounded-full relative overflow-hidden">
-                      <div className="absolute top-0 left-0 h-full w-2/3 bg-risk-medium rounded-full"></div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-defi-purple/10 flex items-center justify-center mr-3">
-                        <MessageSquare className="h-4 w-4 text-defi-purple" />
-                      </div>
-                      <span>Social Sentiment</span>
-                    </div>
-                    <div className="h-2 w-24 bg-risk-high/30 rounded-full relative overflow-hidden">
-                      <div className="absolute top-0 left-0 h-full w-1/3 bg-risk-high rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="w-full h-12 bg-white/5 rounded-lg flex items-center justify-center text-sm font-medium">
-                  Overall Risk Score: <span className="ml-2 text-risk-medium">Moderate (67/100)</span>
+                  <div className="text-xs text-white/70">AssureFi Protocol</div>
                 </div>
               </div>
             </div>
