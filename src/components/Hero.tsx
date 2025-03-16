@@ -2,10 +2,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, BarChart2, MessageSquare, ChevronRight } from 'lucide-react';
+import AnimatedBackground from './AnimatedBackground';
 
 const Hero: React.FC = () => {
   return (
     <div className="relative pb-16 pt-32 md:pt-40 overflow-hidden">
+      {/* Animated background */}
+      <AnimatedBackground />
+      
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-mesh -z-10"></div>
       
